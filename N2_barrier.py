@@ -33,27 +33,32 @@ This demonstrates wave tunneling
 
 """
 
+# See https://tediousderivations.blogspot.com/2013/08/rectangular-potential-barrier.html
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 # Enable dark mode plotting
 plt.style.use('dark_background')
 
+# higher N_omega means more wiggles
 N_omega = 4
+# omega doesn't really change anything about the plot
 omega = 0.7
 
 # Domain
 L = 0.001       # barrier width
-kL = 1
+kL = 1          # wavelength barrier ratio, higher means less transmission
 k = kL/L
 z_0 = 0
-flank = 4*L
+flank = 3*L
 nz = 50
 z  = np.linspace(-flank,flank+L, 5*nz)
 z1 = np.linspace(-flank, 0, 2*nz)
 z2 = np.linspace(0, L, nz)
 z3 = np.linspace(L, flank+L, 2*nz)
 
+# Added a negative sign in m to avoid taking sqrt of negative number
 m = np.sqrt(-(k**2/(omega**2))*(1 - N_omega**2))
 l = np.sqrt(k**2/(omega**2))
 
@@ -77,20 +82,47 @@ psi1=psi_1(z1)
 psi2=psi_2(z2)
 psi3=psi_3(z3)
 
-def sq_amp(psi):
-    # return (psi*np.conj(psi)).real
-    return psi.real
-
 fig,ax = plt.subplots()
-ax.plot(z1, sq_amp(psi1), color='w')
-ax.plot(z2, sq_amp(psi2), color='w')
-ax.plot(z3, sq_amp(psi3), color='w')
 
-ax1 = ax.twinx()
-ax1.plot(z1, (z1*0+N_omega*omega))
-ax1.plot(z3, (z3*0+N_omega*omega))
-ax1.plot(z, (z*0+omega))
-# ax1.set_ylim([0,1.3])
-ax1.set_ylabel(r'Potential')
+# Set larger font sizes
+this_font_size = 16
+
+# plot N
+N_clr = 'skyblue'
+ax.plot((z1*0+N_omega*omega), z1, N_clr, label='$N(z)$')
+ax.plot((z2*0), z2, N_clr)
+ax.plot((z3*0+N_omega*omega), z3, N_clr)
+ax.hlines(y=0, color=N_clr, xmin=0, xmax=(N_omega*omega))
+ax.hlines(y=L, color=N_clr, xmin=0, xmax=(N_omega*omega))
+# plot omega
+ax.plot((z*0+omega), z, color='lightcoral', linestyle='--', label='$\omega$')
+ax.set_xlim([-0.1,1.1*N_omega*omega])
+ax.set_xlabel(r'$\Psi(z)$', fontsize=this_font_size)
+ax.set_ylabel(r'$z$', fontsize=this_font_size)
+plt.legend(loc='lower left')
+
+# Make a twin axis
+ax1 = ax.twiny()
+# Plot psi
+ax1.plot(psi1.real, z1, color='w')
+ax1.plot(psi2.real, z2, color='w')
+ax1.plot(psi3.real, z3, color='w')
+ax1.set_xlim([-3,3])
+# ax1.set_xlabel(r'$\Psi(z)$')
+# flip y axis upside down
+ax1.invert_yaxis()
+
+# Removing ticks and axis numbers
+ax.axes.xaxis.set_ticks([])
+ax.axes.yaxis.set_ticks([])
+ax1.axes.xaxis.set_ticks([])
+ax1.axes.yaxis.set_ticks([])
+#
+ax.set_frame_on(False)
+ax1.spines['top'].set_visible(False)
+ax1.spines['right'].set_visible(False)
+# xmin, xmax = ax1.get_xaxis().get_view_interval()
+# ymin, ymax = ax1.get_yaxis().get_view_interval()
+# ax1.add_artist(Line2D((xmin, xmax), (ymin, ymin), color='black', linewidth=2))
 
 plt.show()
