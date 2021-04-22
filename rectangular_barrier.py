@@ -41,13 +41,15 @@ plt.style.use('dark_background')
 x = np.linspace(-1,1,100)
 
 E = 20
-V_0 = 1.3*E
+pot_fact = 1.3
+V_0 = pot_fact*E
 
 # Domain
 L = 0.5       # barrier width
 x_0 = 0
 flank = 2*L
 nx = 50
+x  = np.linspace(-flank,flank+L, 5*nx)
 x1 = np.linspace(-flank, 0, 2*nx)
 x2 = np.linspace(0, L, nx)
 x3 = np.linspace(L, flank+L, 2*nx)
@@ -80,7 +82,14 @@ def sq_amp(psi):
     return psi.real
 
 fig,ax = plt.subplots()
-plt.plot(x1, sq_amp(psi1), label=r'$\psi_1$')
-plt.plot(x2, sq_amp(psi2), label=r'$\psi_2$')
-plt.plot(x3, sq_amp(psi3), label=r'$\psi_3$')
+ax.plot(x1, sq_amp(psi1), color='w')
+ax.plot(x2, sq_amp(psi2), color='w')
+ax.plot(x3, sq_amp(psi3), color='w')
+
+ax1 = ax.twinx()
+ax1.plot(x2, (x2*0+pot_fact))
+ax1.plot(x, (x*0+1))
+ax1.set_ylim([0,2])
+ax1.set_ylabel(r'Potential')
+
 plt.show()
